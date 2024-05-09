@@ -116,7 +116,7 @@ ADD --chown=${USER}:${USER} supervisord.conf ${HOME}/.startup_conf/
 ADD --chown=${USER}:${USER} startup.sh ${HOME}/.startup_conf/
 
 # install bash libs
-RUN mkdir bash && cd bash && git clone https://github.com/huntelaar112/bash-script.sh.git && cd bash-script.sh && sudo bash ./install.sh && cd
+# RUN mkdir bash && cd bash && git clone https://github.com/huntelaar112/bash-script.sh.git && cd bash-script.sh && sudo bash ./install.sh && cd
 
 EXPOSE 5800
 EXPOSE 5900
