@@ -1,4 +1,4 @@
-FROM debian:12.2
+FROM debian:12.8
 
 LABEL maintainer="khacman98@gmail.com" \
       io.k8s.description="Headless VNC Container with LXQt Desktop manager" \
@@ -8,7 +8,6 @@ LABEL maintainer="khacman98@gmail.com" \
       io.openshift.non-scalable=true
 
 ENV DEBIAN_FRONTEND noninteractive
-
 ENV USER="mannk" USERPASS='$1$xyz$eETluLJoxfGBmHCxo.4Ia1'
 ENV HOME="/home/mannk"
 
