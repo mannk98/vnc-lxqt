@@ -1,17 +1,15 @@
 FROM debian:12.8
 
 LABEL maintainer="khacman98@gmail.com" \
-      io.k8s.description="Headless VNC Container with LXQt Desktop manager" \
-      io.k8s.display-name="Headless VNC Container based on Debian" \
-      io.openshift.expose-services="5900:vnc" \
-      io.openshift.tags="vnc, debian, lxqt" \
-      io.openshift.non-scalable=true
+    io.k8s.description="Headless VNC Container with LXQt Desktop manager" \
+    io.k8s.display-name="Headless VNC Container based on Debian" \
+    io.openshift.expose-services="5900:vnc" \
+    io.openshift.tags="vnc, debian, lxqt" \
+    io.openshift.non-scalable=true
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV USER="mannk" USERPASS='$1$xyz$eETluLJoxfGBmHCxo.4Ia1'
 ENV HOME="/home/mannk"
-
-ENV bashScript="https://github.com/huntelaar112/bash-script.sh.git"
 
 SHELL ["/bin/bash", "-c"]
 #keep, not update
@@ -20,11 +18,11 @@ RUN dpkg-divert --local --rename --add /sbin/init && ln -sf /bin/true /sbin/init
 
 #RUN sed -i "/^# deb.*multiverse/ s/^# //" /etc/apt/sources.list
 RUN /bin/bash && echo $'#deb http://deb.debian.org/debian/ bookworm main non-free-firmware \n\
-deb-src http://deb.debian.org/debian/ bookworm main non-free-firmware \n\
-deb http://security.debian.org/debian-security bookworm-security main non-free-firmware \n\
-deb-src http://security.debian.org/debian-security bookworm-security main non-free-firmware \n\
-#deb http://deb.debian.org/debian/ bookworm-updates main non-free-firmware \n\
-deb-src http://deb.debian.org/debian/ bookworm-updates main non-free-firmware' > /etc/apt/sources.list
+    deb-src http://deb.debian.org/debian/ bookworm main non-free-firmware \n\
+    deb http://security.debian.org/debian-security bookworm-security main non-free-firmware \n\
+    deb-src http://security.debian.org/debian-security bookworm-security main non-free-firmware \n\
+    #deb http://deb.debian.org/debian/ bookworm-updates main non-free-firmware \n\
+    deb-src http://deb.debian.org/debian/ bookworm-updates main non-free-firmware' > /etc/apt/sources.list
 
 #--no-install-recommends
 #RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -62,8 +60,8 @@ RUN wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | gpg --de
 
 # create user and add to sudo
 RUN /bin/dbus-uuidgen --ensure && \
-        useradd -m -s /bin/bash -p "${USERPASS}" ${USER} && usermod -aG sudo ${USER} \
-        && 	echo ""${USER}" ALL=(ALL:ALL) NOPASSWD:ALL" >>/etc/sudoers && chown ${USER}:${USER} ${HOME}
+    useradd -m -s /bin/bash -p "${USERPASS}" ${USER} && usermod -aG sudo ${USER} \
+    && 	echo ""${USER}" ALL=(ALL:ALL) NOPASSWD:ALL" >>/etc/sudoers && chown ${USER}:${USER} ${HOME}
 
 #change datetime to gmt+7
 RUN cp /etc/localtime /etc/localtime_backup && sudo ln -sf /usr/share/zoneinfo/Asia/Ho_Chi_Minh /etc/localtime
@@ -74,40 +72,40 @@ USER mannk
 # config lxqt
 RUN mkdir -p ${HOME}/.config/lxqt && \
     echo $'[General] \n\
-theme=KDE-Plasma \n\
-\n\
-[Qt]\n\
-style=Windows' >> ${HOME}/.config/lxqt/lxqt.conf \
-        && \
-        echo 'Xcursor.theme: breeze_cursors' >> ${HOME}/.Xdefaults \
-        && \
-        mkdir -p ${HOME}/.config/pcmanfm-qt/lxqt && \
-        echo '[Desktop]' >> ${HOME}/.config/pcmanfm-qt/lxqt/settings.conf && \
-        echo 'Wallpaper=/usr/share/lxqt/wallpapers/kde-plasma.png' >> ${HOME}/.config/pcmanfm-qt/lxqt/settings.conf && \
-        echo 'WallpaperMode=stretch' >> ${HOME}/.config/pcmanfm-qt/lxqt/settings.conf \
-        && \
-        mkdir -p ${HOME}/.config/lxqt/ && \
-        echo '[quicklaunch]' >> ${HOME}/.config/lxqt/panel.conf && \
-        echo 'apps\1\desktop=/usr/share/applications/qterminal.desktop' >> ${HOME}/.config/lxqt/panel.conf && \
-        echo 'apps\2\desktop=/usr/share/applications/pcmanfm-qt.desktop' >> ${HOME}/.config/lxqt/panel.conf && \
-        echo 'apps\size=3' >> ${HOME}/.config/lxqt/panel.conf
+    theme=KDE-Plasma \n\
+    \n\
+    [Qt]\n\
+    style=Windows' >> ${HOME}/.config/lxqt/lxqt.conf \
+    && \
+    echo 'Xcursor.theme: breeze_cursors' >> ${HOME}/.Xdefaults \
+    && \
+    mkdir -p ${HOME}/.config/pcmanfm-qt/lxqt && \
+    echo '[Desktop]' >> ${HOME}/.config/pcmanfm-qt/lxqt/settings.conf && \
+    echo 'Wallpaper=/usr/share/lxqt/wallpapers/kde-plasma.png' >> ${HOME}/.config/pcmanfm-qt/lxqt/settings.conf && \
+    echo 'WallpaperMode=stretch' >> ${HOME}/.config/pcmanfm-qt/lxqt/settings.conf \
+    && \
+    mkdir -p ${HOME}/.config/lxqt/ && \
+    echo '[quicklaunch]' >> ${HOME}/.config/lxqt/panel.conf && \
+    echo 'apps\1\desktop=/usr/share/applications/qterminal.desktop' >> ${HOME}/.config/lxqt/panel.conf && \
+    echo 'apps\2\desktop=/usr/share/applications/pcmanfm-qt.desktop' >> ${HOME}/.config/lxqt/panel.conf && \
+    echo 'apps\size=3' >> ${HOME}/.config/lxqt/panel.conf
 
 # config auto start in lxqt session
 RUN mkdir -p ${HOME}/.config/autostart && \
     echo $'[Desktop Entry] \n\
-          Exec=ibus start & \n\
-          Name=ibusd  \n\
-          OnlyShowIn=LXQt; \n\
-          Type=Application \n\
-          Version=1.0 \n\
-          X-LXQt-Need-Tray=true' >${HOME}/.config/autostart/ibusd.desktop && \
+    Exec=ibus start & \n\
+    Name=ibusd  \n\
+    OnlyShowIn=LXQt; \n\
+    Type=Application \n\
+    Version=1.0 \n\
+    X-LXQt-Need-Tray=true' >${HOME}/.config/autostart/ibusd.desktop && \
     echo $'[Desktop Entry] \n\
-          Exec=lxterminal \n\
-          Name=lxterminal \n\
-          OnlyShowIn=LXQt; \n\
-          Type=Application \n\
-          Version=1.0 \n\
-          X-LXQt-Need-Tray=true' >${HOME}/.config/autostart/lxterminal.desktop
+    Exec=lxterminal \n\
+    Name=lxterminal \n\
+    OnlyShowIn=LXQt; \n\
+    Type=Application \n\
+    Version=1.0 \n\
+    X-LXQt-Need-Tray=true' >${HOME}/.config/autostart/lxterminal.desktop
 
 # chown to allow mannk user start supervisord
 RUN mkdir .startup_conf
